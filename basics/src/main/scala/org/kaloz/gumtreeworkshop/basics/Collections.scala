@@ -1,7 +1,5 @@
 package org.kaloz.gumtreeworkshop.basics
 
-import scala.util.matching.Regex
-
 object Collections extends App {
 
   val l = List("a", "b", "c")

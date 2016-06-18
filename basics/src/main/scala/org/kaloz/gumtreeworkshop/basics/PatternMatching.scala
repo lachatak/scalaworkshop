@@ -82,6 +82,12 @@ object PatternMatching extends App {
   println(persons.collect { case Person(name, a@Some(age)) if age > 20 => a })
 
   /**
-    * TASK: write a simple argument parser which stores the results in a map
+    * Solution: write a simple argument parser which stores the results in a map
     */
+  val ArgumentPattern =
+    """--([A-Za-z0-9]*)=([A-Za-z0-9]*)""".r
+  val arguments = Array("--param=value", "--param2=value2", "--param3=value3")
+  val argumentMap = arguments.collect { case ArgumentPattern(key, value) => (key -> value) }.toMap
+
+  println(argumentMap.getOrElse("param", "default"))
 }
