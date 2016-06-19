@@ -3,4 +3,5 @@
 - Collections
 - Pattern matching extra examples
 - Implicits
+- Futures
 
