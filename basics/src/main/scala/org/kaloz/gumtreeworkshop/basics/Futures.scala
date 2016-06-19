@@ -103,4 +103,13 @@ object Futures extends App {
 
   val strings = List("2", "10", "a", "15")
 
+  val convert: String => Future[Int] = string => Future {
+    string.toInt
+  }.recover { case _ => 0 }
+
+  val sum3 = Future.traverse(strings)(convert).map(_.sum)
+
+  val result8 = Await.result(sum3, 5 second)
+
+  println(result8)
 }
