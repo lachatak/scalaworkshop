@@ -1,7 +1,6 @@
 package org.kaloz.gumtreeworkshop.basics
 
-import org.kaloz.gumtreeworkshop.basics.Utils._
-import org.kaloz.gumtreeworkshop.basics.Utils.StringOps
+import org.kaloz.gumtreeworkshop.basics.Utils.{StringOps, _}
 
 import scala.util.Try
 
@@ -40,6 +39,11 @@ object Implicits extends App {
     * the provided implicit predicate
     */
 
+  println(5.sumOfAllEven)
+
+  implicit val predicate = (num: Int) => num.toString.contains("2")
+  println(100.sumOf)
+
 }
 
 object Utils {
@@ -54,6 +58,21 @@ object Utils {
     def repeatN(implicit repeatNumber: Int) = List.fill(repeatNumber)(text).mkString
 
     def as[T](implicit converter: String => T) = converter(text)
+  }
+
+  /**
+    * SOLUTION:
+    * - Provide IntOps implicit class with 'sumOfAllEven' method which
+    * gives back the sum of all the even numbers between 0 and the given Int
+    *
+    * - Provide IntOps implicit class with 'sumOf' method which
+    * gives back the sum of all the numbers between 0 and the given Int which satisfies
+    * the provided implicit predicate
+    */
+  implicit class IntOps(val num: Int) extends AnyVal {
+    def sumOfAllEven = (0 to num).filter(_ % 2 == 0).sum
+
+    def sumOf(implicit predicate: Int => Boolean) = (0 to num).filter(predicate).sum
   }
 
 }
