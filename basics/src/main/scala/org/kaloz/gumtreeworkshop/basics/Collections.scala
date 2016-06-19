@@ -1,5 +1,7 @@
 package org.kaloz.gumtreeworkshop.basics
 
+import scala.util.matching.Regex
+
 object Collections extends App {
 
   val l = List("a", "b", "c")
@@ -58,4 +60,17 @@ object Collections extends App {
     */
 
   val alphabet = (('A' to 'Z') ++ ('a' to 'z')).zipWithIndex.toMap
+  val Word = "(.{4,5})".r
+
+  val result2 = sentences.mkString(" ").split(" ").toList.collect { case Word(word) => word.map(alphabet.getOrElse(_, -1)).sum }
+  println(result2)
+
+  /**
+    * Split functions
+    */
+  val prepareWordList: List[String] => List[String] = sentences => sentences.mkString(" ").split(" ").toList
+  val convertWordList: List[String] => List[Int] = words => words.collect { case Word(word) => word.map(alphabet.getOrElse(_, -1)).sum }
+
+  println((prepareWordList andThen convertWordList) (sentences).mkString(" "))
+
 }
