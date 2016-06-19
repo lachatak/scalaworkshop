@@ -41,4 +41,21 @@ object Collections extends App {
     "Scalaz comes with lots of monad transformers.",
     "Let’s see how to use them and the benefits they supply."
   )
+
+  /**
+    * SOLUTION
+    */
+  val result = sentences.mkString.replaceAll(" ", "")
+    .groupBy(identity)
+    .collect { case (_, value) if value.size >= 5 && value.size < 20 => value.size }.toList
+    .sortWith(_ > _)
+    .take(5).sum * 2
+
+  /**
+    * TASK: Convert every 4 and 5 letter word in the sentences variable to a number where the number for a word equals to the sum of the positions of all the characters in a given dictionary
+    * 'us' -> 90 since position of 'u' is 46 and position of 's' is 44 in the given dictionary
+    * If something cannot be found in the alphabet then its value is -1
+    */
+
+  val alphabet = (('A' to 'Z') ++ ('a' to 'z')).zipWithIndex.toMap
 }
