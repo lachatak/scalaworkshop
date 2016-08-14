@@ -78,4 +78,20 @@ object Monoids extends App {
 
   val errors2 = List(ErrorMessage2(Set("invalid")), ErrorMessage2(Set("not_found")), ErrorMessage2(Set("invalid")), ErrorMessage2(Set("error")))
 
+  /**
+    * SOLUTION1: Count how many times an error message occurs. Convert every item to be a Map and use foldMap and monoid laws.
+    */
+  println(errors.foldMap(e => Map(e.message -> 1)))
+
+  /**
+    * SOLUTION2: Provide a final ErrorMessage2 object with all the possible error messages and the number of all errors in the list.
+    * Create a new monoid instance for ErrorMessage2 and aggregate via foldMap
+    */
+  implicit def errorMessage2Monoid[A]: Monoid[ErrorMessage2] = new Monoid[ErrorMessage2] {
+    def zero: ErrorMessage2 = ErrorMessage2(Set.empty)
+
+    def append(f1: ErrorMessage2, f2: => ErrorMessage2) = f1.copy(f1.message ++ f2.message, f1.counter + f2.counter)
+  }
+
+  println(errors2.foldMap(identity))
 }
