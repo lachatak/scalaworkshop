@@ -35,5 +35,11 @@ object Dependencies {
     scalaTest     	% "test"
   )
 
+  val scalaz = deps(
+    scalazCore,
+    mockito % "test",
+    scalaTest % "test"
+  )
+
   private def deps(modules: ModuleID*): Seq[Setting[_]] = Seq(libraryDependencies ++= modules)
 }
