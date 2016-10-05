@@ -1,6 +1,5 @@
 package org.kaloz.gumtreeworkshop.scalaz
 
-import scala.collection.mutable.ListBuffer
 import scalaz._
 import Scalaz._
 /* Standard Scala provides special type that can be used to handle (successful or not) result of some operation.
@@ -49,28 +48,40 @@ object DisjunctionsAndValidations extends App {
    * Sometimes we would like to take multiple data inputs, validate them and then combine into one object.
    * Good example of that is validating input form.
    *
-   * That's how we do it in plain Scala
+   * ScalaZ has a good solution to this problem, which is based of a concept of Applicative Functors.
+   *
+   * It introduces the new type - Validation, which is somewhat similar to Either/Disjunction, but rather than
+   * being a monad, is an applicative.
+   * You can combine multiple Validation objects into one and then apply a function on them.
+   *
+   * Validation come together with a specific data structure called Nel (non empty list)
+   * They are usually used together in a form Validation[Nel[E], V] where V is a type of validated value while E is
+   * a type of error that can occur during validation.
+   *
+   * Validation[Nel[E], V] has an alias ValidationNel[E, V]
+   *
    * */
 
   case class User(name : String, surname : String)
 
-  def validate(input : String) : Either[String, String] = if (input.isEmpty) Left("Input is empty") else Right(input)
+  def validate(input : String) : ValidationNel[String, String] =
+    if (input.isEmpty) "Input is empty".failureNel[String]
+    else input.successNel[String]
 
   val firstname = validate("John")
   val lastname = validate("Smith")
 
-  val user: Either[Seq[String], User] = if (firstname.isRight && lastname.isRight) {
-    //Well its not so simple
-    Right(User(firstname.right.get, lastname.right.get))
-  } else {
-    //It's not done functionally...
-    val errors = ListBuffer[String]()
-    if (firstname.isLeft) errors += firstname.left.get
-    if (lastname.isLeft) errors += lastname.left.get
-    Left(errors.toSeq)
-  }
+    //Validation alone is not so important, it has quite similar capabilities as Either or Disjunction
 
-  println(user)
+    firstname match {
+      case Success(value) => println("Validation succeeded")
+      case Failure(errors) => println("Errors occurred " + errors.toList.mkString(","))
+    }
+
+    //Things are getting more interesting when we would like to combine multiple validations
+    val user = (firstname |@| lastname) { User(_, _) }
+
+    println(user)
 
   //EXERCISE: Check what happens if user entered empty value
 
