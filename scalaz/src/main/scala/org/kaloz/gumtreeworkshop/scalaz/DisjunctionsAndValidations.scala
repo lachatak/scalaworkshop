@@ -1,5 +1,6 @@
 package org.kaloz.gumtreeworkshop.scalaz
 
+import scala.collection.mutable.ListBuffer
 import scalaz._
 import Scalaz._
 /* Standard Scala provides special type that can be used to handle (successful or not) result of some operation.
@@ -40,5 +41,37 @@ object DisjunctionsAndValidations extends App {
   println(result)
 
   //EXERCISE: Check what will be the result of for comprehension when the first div fails, what if the second div fails
+
+  /* One problem with disjunction compositions is that they fail fast. This means the first operation in for
+   * comprehension will result in skipping the rest of steps. This will also means that we will get an error
+   * details only from the first operation that failed.
+   *
+   * Sometimes we would like to take multiple data inputs, validate them and then combine into one object.
+   * Good example of that is validating input form.
+   *
+   * That's how we do it in plain Scala
+   * */
+
+  case class User(name : String, surname : String)
+
+  def validate(input : String) : Either[String, String] = if (input.isEmpty) Left("Input is empty") else Right(input)
+
+  val firstname = validate("John")
+  val lastname = validate("Smith")
+
+  val user: Either[Seq[String], User] = if (firstname.isRight && lastname.isRight) {
+    //Well its not so simple
+    Right(User(firstname.right.get, lastname.right.get))
+  } else {
+    //It's not done functionally...
+    val errors = ListBuffer[String]()
+    if (firstname.isLeft) errors += firstname.left.get
+    if (lastname.isLeft) errors += lastname.left.get
+    Left(errors.toSeq)
+  }
+
+  println(user)
+
+  //EXERCISE: Check what happens if user entered empty value
 
 }
