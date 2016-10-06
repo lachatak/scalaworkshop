@@ -8,18 +8,34 @@
 
     val asyncOne : Future[Int] = Future { Thread.sleep(1000); x = 1 }
 
-This will fail because - in order to create Future you have to provide a way of creating/getting the execution
-thread. This is done by implicit parameter (ec : ExecutionContext).
-Not going into details - if you want to use
-standard Scalas thread pool, you shoud add the following line to your imports:
+Seem to be very easy :)
+
+Unfortunately this will fail because in order to create Future you have to provide a way of creating/getting the
+execution thread. This is done by implicit parameter of the future contructor:
+
+    def apply[T](body: =>T)(implicit executor: ExecutionContext)
+
+Not going into details - if you want to usestandard Scalas thread pool, you shoud add the following line to your imports:
 
      import scala.concurrent.ExecutionContext.Implicits.global
 
-
-While futures are synchronous, we can also future which is synchronous (which means it holds already processed
+While futures are asynchronous, we can also future which is synchronous (which means it holds already processed
 computation). This is useful in tests:
 
     val syncOne: Future[Int] = Future.successful(1)
+
+# Promise
+
+Future has it's close sibling which is a *Promise*. Promise is kind of builder of the future.
+You can make the promise that you will provide the value, and the you may fulfill the promise.
+From the promise you can derive the future.
+
+    val p : Promise[Int] = Promise[Int]
+    val f : Future[Int] = p.future
+    p.complete(Success(16))
+
+Each promise can be completed only once. Any subsequent calls to *complete* will be ignored. Completing the promise
+makes the result of
 
 # What can we do with future?
 
@@ -27,7 +43,7 @@ The code below returns Some(value) if future ended, None() if not:
 
      val result = asyncOne.value
 
-but we don't know whether it's finished?
+There is a problem here. We don't know whether it's finished.
 We can wait
 
      import scala.concurrent.duration._ //imports 'seconds' function
@@ -71,11 +87,11 @@ have to do it in the following way.
 
 ## Error handling and recovery
 
-If future fails, apply pf to the error, builds new futurefrom it and returns it:
+If future fails, apply pf to the error, builds new future from it and returns it:
 
       def recover(pf: PartialFunction[Throwable, U])
 
-If future fails, applies pf to the error and: return it:
+If future fails, applies pf to the error and returns it:
 
       def recoverWith(pf: PartialFunction[Throwable, Future[U])
 
