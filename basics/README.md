@@ -1,7 +1,7 @@
 ## Module Basics
 
 - Collections
-- Pattern matching extra examples
+- [Pattern matching](PatternMatching.md)
 - Implicits
-- Futures
+- [Futures](Futures.md)
 
