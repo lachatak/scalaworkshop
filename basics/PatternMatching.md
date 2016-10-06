@@ -60,16 +60,18 @@ Match expression, and other code structures described below use partial function
 ## Exception handling
 
 Scala uses pattern matching to catch specific kind of exception
+
+case class SomeError(error: String) extends RuntimeException(error)
+
+try {
+    throw new SomeError("error")
+} catch {
+    case SomeError(message) => println(message)
+    case e : NullPointerException => println("Kaboom!")
+}
+
 Remember - you are not limited just to matching on exception type,
 you can match on the exception arguments, you can use if's etc.
-
-    case class SomeError(error: String) extends RuntimeException(error)
-
-    try {
-        throw new SomeError("error")
-    } catch {
-        case SomeError(message) => println(message)
-    }
 
 ## Utility functions of standard classes
 
